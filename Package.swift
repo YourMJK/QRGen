@@ -6,14 +6,14 @@ import PackageDescription
 let package = Package(
 	name: "QRGen",
 	products: [
-		.executable(name: "QRGen", targets: ["QRGen"]),
+		.library(name: "QRGen", targets: ["QRGen"]),
 	],
 	dependencies: [
 		.package(url: "https://github.com/YourMJK/swift-argument-parser", branch: "main"),
 		.package(url: "https://github.com/YourMJK/QRCodeGenerator", branch: "master"),
 	],
 	targets: [
-		.executableTarget(
+		.target(
 			name: "QRGen",
 			dependencies: [
 				.product(name: "ArgumentParser", package: "swift-argument-parser"),
