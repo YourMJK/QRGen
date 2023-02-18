@@ -9,15 +9,6 @@
           "revision": "65c3ca6d310251a0989c5221318b8c377f2027a7",
           "version": null
         }
-      },
-      {
-        "package": "swift-argument-parser",
-        "repositoryURL": "https://github.com/YourMJK/swift-argument-parser",
-        "state": {
-          "branch": "main",
-          "revision": "e323f3feb07c64e05db8db0ac0ad73bd5ceae6ae",
-          "version": null
-        }
       }
     ]
   },
