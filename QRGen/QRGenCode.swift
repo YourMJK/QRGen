@@ -11,7 +11,6 @@ import CoreImage
 #endif
 
 struct QRGenCode {
-	let outputURL: URL
 	let generatorType: GeneratorType
 	let correctionLevel: CorrectionLevel
 	let minVersion: Int
@@ -44,22 +43,11 @@ struct QRGenCode {
 	}
 	
 	
-	/// Generate QR code from input and write output files
-	func generate(with input: Input) throws {
-		// Prepare output files
-		let outputFile = generateOutputURLs()
-		
-		// Check output directory exists
-		var isDirectory: ObjCBool = false
-		guard FileManager.default.fileExists(atPath: outputFile.dir.path, isDirectory: &isDirectory) && isDirectory.boolValue else {
-			exit(error: "No such output directory \"\(outputFile.dir.path)\"")
-		}
-		
-		// Generate QR code and write output files
-		func generate<T: QRCodeGeneratorProtocol>(using generatorType: T.Type) throws {
-			// Generate basic QR Code
+	/// Generate QR code from input
+	func generate(with input: Input) throws -> QRCodeProtocol {
+		func generate<T: QRCodeGeneratorProtocol>(using generatorType: T.Type) throws -> QRCodeProtocol {
 			let generator = T(correctionLevel: correctionLevel, minVersion: minVersion, maxVersion: maxVersion)
-			let qrCode: T.Product = try {
+			return try {
 				switch input {
 					case .data(let data):
 						return try generator.generate(for: data)
@@ -67,70 +55,24 @@ struct QRGenCode {
 						return try generator.generate(for: string, optimize: optimize, strictEncoding: strict)
 				}
 			}()
-			
-			// Create PNG (1px scale)
-			if writePNG {
-				#if canImport(AppKit)
-				try createPNG(qrCode: qrCode, outputFile: outputFile.unstyled)
-				#endif
-			}
-			
-			// Create SVG
-			try createSVG(qrCode: qrCode, outputFile: outputFile.styled)
 		}
 		switch generatorType {
 			#if canImport(CoreImage)
-			case .coreImage: try generate(using: CIQRCodeGenerator.self)
+			case .coreImage: return try generate(using: CIQRCodeGenerator.self)
 			#endif
-			case .nayuki:    try generate(using: BCQRCodeGenerator.self)
+			case .nayuki:    return try generate(using: BCQRCodeGenerator.self)
 		}
-	}
-	
-	
-	private func generateOutputURLs() -> (dir: URL, unstyled: URL, styled: URL) {
-		let suffix = "QR-\(correctionLevel)"
-		var suffixStyled = suffix
-		
-		func addNameTag(_ tag: String, _ condition: Bool) {
-			guard condition else { return }
-			suffixStyled += "-" + tag
-		}
-		addNameTag("\(style)", style != .standard)
-		addNameTag("m\(pixelMargin)", pixelMargin != 0)
-		addNameTag("r\(cornerRadius)", cornerRadius != 100 && style != .standard)
-		addNameTag("all", ignoreSafeAreas)
-		#if canImport(CoreImage)
-		addNameTag("CI", generatorType == .coreImage)
-		#endif
-		
-		let baseName = !outputURL.hasDirectoryPath ? outputURL.lastPathComponent : {
-			let formatter = DateFormatter()
-			formatter.locale = Locale(identifier: "en_US_POSIX")
-			formatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
-			return formatter.string(from: Date())
-		}()
-		let name = "\(baseName)_\(suffix)"
-		let nameStyled = "\(baseName)_\(suffixStyled)"
-		
-		let baseURL = outputURL.hasDirectoryPath ? outputURL : outputURL.deletingLastPathComponent()
-		let url = baseURL.appendingPathComponent(name)
-		let urlStyled = baseURL.appendingPathComponent(nameStyled)
-		
-		return (baseURL, url, urlStyled)
 	}
 	
 	
 	#if canImport(AppKit)
-	private func createPNG<T: QRCodeProtocol>(qrCode: T, outputFile: URL) throws {
-		let outputFilePNG = outputFile.appendingPathExtension("png")
-		let cicontext = CIContext()
-		let ciimage = CIImage(cgImage: qrCode.cgimage)
-		try cicontext.writePNGRepresentation(of: ciimage, to: outputFilePNG, format: .RGBA8, colorSpace: ciimage.colorSpace!)
+	func createRasterImage<T: QRCodeProtocol>(qrCode: T, outputFile: URL) -> CIImage {
+		CIImage(cgImage: qrCode.cgimage)
 	}
 	#endif
 	
 	
-	private func createSVG<T: QRCodeProtocol>(qrCode: T, outputFile: URL) throws {
+	func createSVG<T: QRCodeProtocol>(qrCode: T, outputFile: URL) -> String {
 		let border = 1
 		let size = qrCode.size
 		let sizeWithBorder = size + border*2
@@ -221,8 +163,6 @@ struct QRGenCode {
 				}
 		}
 		
-		// Write file
-		let outputFileSVG = outputFile.appendingPathExtension("svg")
-		try svg.content(combineClusters: !noShapeOptimization).write(to: outputFileSVG, atomically: true, encoding: .utf8)
+		return svg.content(combineClusters: !noShapeOptimization)
 	}
 }

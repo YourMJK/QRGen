@@ -19,7 +19,7 @@ struct QRGenContent {
 	}
 	
 	
-	static func wifi(ssid: String, password: String?, encryption: WifiEncryption?, hidden: Bool = false) {
+	static func wifi(ssid: String, password: String?, encryption: WifiEncryption?, hidden: Bool = false) -> String {
 		var content = "WIFI:"
 		func addParameter(_ parameter: String, value: String) {
 			var escapedValue = value
@@ -54,11 +54,11 @@ struct QRGenContent {
 		}
 		content += ";"
 		
-		stdout(content, terminator: "")
+		return content
 	}
 	
 	
-	static func event(name: String?, start: Date, end: Date?, location: String?, coordinates: GeoCoordinates?) {
+	static func event(name: String?, start: Date, end: Date?, location: String?, coordinates: GeoCoordinates?) -> String {
 		var lines = [String]()
 		func addParameter(_ parameter: String, _ value: String) {
 			lines.append("\(parameter):\(value)")
@@ -88,14 +88,14 @@ struct QRGenContent {
 		lines.append("")
 		let content = lines.joined(separator: "\r\n")
 		
-		stdout(content, terminator: "")
+		return content
 	}
 	
-	static func geo(coordinates: GeoCoordinates, altitude: Int?) {
+	static func geo(coordinates: GeoCoordinates, altitude: Int?) -> String {
 		var content = String(format: "geo:%.5f,%.5f", coordinates.latitude, coordinates.longitude)
 		if let altitude {
 			content += ",\(altitude)"
 		}
-		stdout(content, terminator: "")
+		return content
 	}
 }
