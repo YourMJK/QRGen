@@ -15,7 +15,7 @@ typealias BCQRCode = QRCode
 
 extension BCQRCode: QRCodeProtocol {
 	#if canImport(AppKit)
-	var cgimage: CGImage {
+	public var cgimage: CGImage {
 		let nsimage = self.makeImage(border: 0)
 		return nsimage.cgImage(forProposedRect: nil, context: nil, hints: nil)!
 	}

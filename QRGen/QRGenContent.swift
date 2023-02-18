@@ -7,19 +7,19 @@
 
 import Foundation
 
-struct QRGenContent {
-	enum WifiEncryption: String, CaseIterable {
+public struct QRGenContent {
+	public enum WifiEncryption: String, CaseIterable {
 		case wep
 		case wpa
 		//case wpa2eap(eapMethod: String?, anonymousIdentity: String?, identity: String?, phase2Method: String?)
 	}
-	struct GeoCoordinates {
+	public struct GeoCoordinates {
 		let latitude: Double
 		let longitude: Double 
 	}
 	
 	
-	static func wifi(ssid: String, password: String?, encryption: WifiEncryption?, hidden: Bool = false) -> String {
+	public static func wifi(ssid: String, password: String?, encryption: WifiEncryption?, hidden: Bool = false) -> String {
 		var content = "WIFI:"
 		func addParameter(_ parameter: String, value: String) {
 			var escapedValue = value
@@ -58,7 +58,7 @@ struct QRGenContent {
 	}
 	
 	
-	static func event(name: String?, start: Date, end: Date?, location: String?, coordinates: GeoCoordinates?) -> String {
+	public static func event(name: String?, start: Date, end: Date?, location: String?, coordinates: GeoCoordinates?) -> String {
 		var lines = [String]()
 		func addParameter(_ parameter: String, _ value: String) {
 			lines.append("\(parameter):\(value)")
@@ -91,7 +91,7 @@ struct QRGenContent {
 		return content
 	}
 	
-	static func geo(coordinates: GeoCoordinates, altitude: Int?) -> String {
+	public static func geo(coordinates: GeoCoordinates, altitude: Int?) -> String {
 		var content = String(format: "geo:%.5f,%.5f", coordinates.latitude, coordinates.longitude)
 		if let altitude {
 			content += ",\(altitude)"

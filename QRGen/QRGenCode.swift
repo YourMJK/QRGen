@@ -10,7 +10,7 @@ import Foundation
 import CoreImage
 #endif
 
-struct QRGenCode {
+public struct QRGenCode {
 	let generatorType: GeneratorType
 	let correctionLevel: CorrectionLevel
 	let minVersion: Int
@@ -24,17 +24,17 @@ struct QRGenCode {
 	let writePNG: Bool
 	let noShapeOptimization: Bool
 	
-	enum Input {
+	public enum Input {
 		case data(Data)
 		case text(String)
 	}
-	enum GeneratorType: String, CaseIterable {
+	public enum GeneratorType: String, CaseIterable {
 		#if canImport(CoreImage)
 		case coreImage
 		#endif
 		case nayuki
 	}
-	enum Style: String, CaseIterable {
+	public enum Style: String, CaseIterable {
 		case standard
 		case dots
 		case holes
@@ -44,7 +44,7 @@ struct QRGenCode {
 	
 	
 	/// Generate QR code from input
-	func generate(with input: Input) throws -> QRCodeProtocol {
+	public func generate(with input: Input) throws -> QRCodeProtocol {
 		func generate<T: QRCodeGeneratorProtocol>(using generatorType: T.Type) throws -> QRCodeProtocol {
 			let generator = T(correctionLevel: correctionLevel, minVersion: minVersion, maxVersion: maxVersion)
 			return try {
@@ -66,13 +66,13 @@ struct QRGenCode {
 	
 	
 	#if canImport(AppKit)
-	func createRasterImage<T: QRCodeProtocol>(qrCode: T, outputFile: URL) -> CIImage {
+	public func createRasterImage<T: QRCodeProtocol>(qrCode: T, outputFile: URL) -> CIImage {
 		CIImage(cgImage: qrCode.cgimage)
 	}
 	#endif
 	
 	
-	func createSVG<T: QRCodeProtocol>(qrCode: T, outputFile: URL) -> String {
+	public func createSVG<T: QRCodeProtocol>(qrCode: T, outputFile: URL) -> String {
 		let border = 1
 		let size = qrCode.size
 		let sizeWithBorder = size + border*2

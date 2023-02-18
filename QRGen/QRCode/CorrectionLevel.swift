@@ -8,6 +8,6 @@
 import Foundation
 
 
-enum CorrectionLevel: String, CaseIterable {
+public enum CorrectionLevel: String, CaseIterable {
 	case L, M, Q, H
 }
