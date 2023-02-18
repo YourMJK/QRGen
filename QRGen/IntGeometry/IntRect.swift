@@ -11,6 +11,10 @@ import Foundation
 public struct IntRect: Equatable {
 	public var origin: IntPoint
 	public var size: IntSize
+	public init(origin: IntPoint, size: IntSize) {
+		self.origin = origin
+		self.size = size
+	}
 }
 
 public extension IntRect {
