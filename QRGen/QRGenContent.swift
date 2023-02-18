@@ -14,8 +14,12 @@ public struct QRGenContent {
 		//case wpa2eap(eapMethod: String?, anonymousIdentity: String?, identity: String?, phase2Method: String?)
 	}
 	public struct GeoCoordinates {
-		let latitude: Double
-		let longitude: Double 
+		public let latitude: Double
+		public let longitude: Double
+		public init(latitude: Double, longitude: Double) {
+			self.latitude = latitude
+			self.longitude = longitude
+		}
 	}
 	
 	

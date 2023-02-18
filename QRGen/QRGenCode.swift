@@ -11,18 +11,43 @@ import CoreImage
 #endif
 
 public struct QRGenCode {
-	let generatorType: GeneratorType
-	let correctionLevel: CorrectionLevel
-	let minVersion: Int
-	let maxVersion: Int
-	let optimize: Bool
-	let strict: Bool
-	let style: Style
-	let pixelMargin: UInt
-	let cornerRadius: UInt
-	let ignoreSafeAreas: Bool
-	let writePNG: Bool
-	let noShapeOptimization: Bool
+	public var generatorType: GeneratorType
+	public var correctionLevel: CorrectionLevel
+	public var minVersion: Int
+	public var maxVersion: Int
+	public var optimize: Bool
+	public var strict: Bool
+	public var style: Style
+	public var pixelMargin: UInt
+	public var cornerRadius: UInt
+	public var ignoreSafeAreas: Bool
+	public var noShapeOptimization: Bool
+	
+	public init(
+		generatorType: GeneratorType = .nayuki,
+		correctionLevel: CorrectionLevel = .M,
+		minVersion: Int = 1,
+		maxVersion: Int = 40,
+		optimize: Bool = false,
+		strict: Bool = false,
+		style: Style = .standard,
+		pixelMargin: UInt = 0,
+		cornerRadius: UInt = 100,
+		ignoreSafeAreas: Bool = false,
+		noShapeOptimization: Bool = false
+	) {
+		self.generatorType = generatorType
+		self.correctionLevel = correctionLevel
+		self.minVersion = minVersion
+		self.maxVersion = maxVersion
+		self.optimize = optimize
+		self.strict = strict
+		self.style = style
+		self.pixelMargin = pixelMargin
+		self.cornerRadius = cornerRadius
+		self.ignoreSafeAreas = ignoreSafeAreas
+		self.noShapeOptimization = noShapeOptimization
+	}
 	
 	public enum Input {
 		case data(Data)
