@@ -91,13 +91,13 @@ public struct QRGenCode {
 	
 	
 	#if canImport(AppKit)
-	public func createRasterImage<T: QRCodeProtocol>(qrCode: T, outputFile: URL) -> CIImage {
+	public func createRasterImage<T: QRCodeProtocol>(qrCode: T) -> CIImage {
 		CIImage(cgImage: qrCode.cgimage)
 	}
 	#endif
 	
 	
-	public func createSVG<T: QRCodeProtocol>(qrCode: T, outputFile: URL) -> String {
+	public func createSVG<T: QRCodeProtocol>(qrCode: T) -> String {
 		let border = 1
 		let size = qrCode.size
 		let sizeWithBorder = size + border*2
