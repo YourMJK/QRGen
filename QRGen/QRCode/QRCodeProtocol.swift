@@ -11,7 +11,7 @@ import CoreGraphics
 #endif
 
 
-protocol QRCodeProtocol {
+public protocol QRCodeProtocol {
 	/// The version number of this QR Code, which is between 1 and 40 (inclusive). This determines the size of this barcode.
 	var version: Int { get }
 	
@@ -27,7 +27,7 @@ protocol QRCodeProtocol {
 	subscript(_ x: Int, _ y: Int) -> Bool { get }
 }
 
-extension QRCodeProtocol {
+public extension QRCodeProtocol {
 	/// The version number of this QR Code, which is between 1 and 40 (inclusive). This determines the size of this barcode.
 	var version: Int {
 		Self.version(from: size)
@@ -39,7 +39,7 @@ extension QRCodeProtocol {
 	}
 }
 
-extension QRCodeProtocol {
+public extension QRCodeProtocol {
 	func safeAreas() -> [IntRect] {
 		Self.safeAreas(for: size)
 	}

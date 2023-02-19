@@ -1,5 +1,5 @@
 //
-//  QRGenCode.swift
+//  QRGen.swift
 //  QRGen
 //
 //  Created by Max-Joseph on 11.08.22.
@@ -10,32 +10,56 @@ import Foundation
 import CoreImage
 #endif
 
-struct QRGenCode {
-	let outputURL: URL
-	let generatorType: GeneratorType
-	let correctionLevel: CorrectionLevel
-	let minVersion: Int
-	let maxVersion: Int
-	let optimize: Bool
-	let strict: Bool
-	let style: Style
-	let pixelMargin: UInt
-	let cornerRadius: UInt
-	let ignoreSafeAreas: Bool
-	let writePNG: Bool
-	let noShapeOptimization: Bool
+public struct QRGen {
+	public var generatorType: GeneratorType
+	public var correctionLevel: CorrectionLevel
+	public var minVersion: Int
+	public var maxVersion: Int
+	public var optimize: Bool
+	public var strict: Bool
+	public var style: Style
+	public var pixelMargin: UInt
+	public var cornerRadius: UInt
+	public var ignoreSafeAreas: Bool
+	public var noShapeOptimization: Bool
 	
-	enum Input {
+	public init(
+		generatorType: GeneratorType = .nayuki,
+		correctionLevel: CorrectionLevel = .M,
+		minVersion: Int = 1,
+		maxVersion: Int = 40,
+		optimize: Bool = false,
+		strict: Bool = false,
+		style: Style = .standard,
+		pixelMargin: UInt = 0,
+		cornerRadius: UInt = 100,
+		ignoreSafeAreas: Bool = false,
+		noShapeOptimization: Bool = false
+	) {
+		self.generatorType = generatorType
+		self.correctionLevel = correctionLevel
+		self.minVersion = minVersion
+		self.maxVersion = maxVersion
+		self.optimize = optimize
+		self.strict = strict
+		self.style = style
+		self.pixelMargin = pixelMargin
+		self.cornerRadius = cornerRadius
+		self.ignoreSafeAreas = ignoreSafeAreas
+		self.noShapeOptimization = noShapeOptimization
+	}
+	
+	public enum Input {
 		case data(Data)
 		case text(String)
 	}
-	enum GeneratorType: String, CaseIterable {
+	public enum GeneratorType: String, CaseIterable {
 		#if canImport(CoreImage)
 		case coreImage
 		#endif
 		case nayuki
 	}
-	enum Style: String, CaseIterable {
+	public enum Style: String, CaseIterable {
 		case standard
 		case dots
 		case holes
@@ -44,22 +68,11 @@ struct QRGenCode {
 	}
 	
 	
-	/// Generate QR code from input and write output files
-	func generate(with input: Input) throws {
-		// Prepare output files
-		let outputFile = generateOutputURLs()
-		
-		// Check output directory exists
-		var isDirectory: ObjCBool = false
-		guard FileManager.default.fileExists(atPath: outputFile.dir.path, isDirectory: &isDirectory) && isDirectory.boolValue else {
-			exit(error: "No such output directory \"\(outputFile.dir.path)\"")
-		}
-		
-		// Generate QR code and write output files
-		func generate<T: QRCodeGeneratorProtocol>(using generatorType: T.Type) throws {
-			// Generate basic QR Code
+	/// Generate QR code from input
+	public func generate(with input: Input) throws -> QRCodeProtocol {
+		func generate<T: QRCodeGeneratorProtocol>(using generatorType: T.Type) throws -> QRCodeProtocol {
 			let generator = T(correctionLevel: correctionLevel, minVersion: minVersion, maxVersion: maxVersion)
-			let qrCode: T.Product = try {
+			return try {
 				switch input {
 					case .data(let data):
 						return try generator.generate(for: data)
@@ -67,70 +80,24 @@ struct QRGenCode {
 						return try generator.generate(for: string, optimize: optimize, strictEncoding: strict)
 				}
 			}()
-			
-			// Create PNG (1px scale)
-			if writePNG {
-				#if canImport(AppKit)
-				try createPNG(qrCode: qrCode, outputFile: outputFile.unstyled)
-				#endif
-			}
-			
-			// Create SVG
-			try createSVG(qrCode: qrCode, outputFile: outputFile.styled)
 		}
 		switch generatorType {
 			#if canImport(CoreImage)
-			case .coreImage: try generate(using: CIQRCodeGenerator.self)
+			case .coreImage: return try generate(using: CIQRCodeGenerator.self)
 			#endif
-			case .nayuki:    try generate(using: BCQRCodeGenerator.self)
+			case .nayuki:    return try generate(using: BCQRCodeGenerator.self)
 		}
-	}
-	
-	
-	private func generateOutputURLs() -> (dir: URL, unstyled: URL, styled: URL) {
-		let suffix = "QR-\(correctionLevel)"
-		var suffixStyled = suffix
-		
-		func addNameTag(_ tag: String, _ condition: Bool) {
-			guard condition else { return }
-			suffixStyled += "-" + tag
-		}
-		addNameTag("\(style)", style != .standard)
-		addNameTag("m\(pixelMargin)", pixelMargin != 0)
-		addNameTag("r\(cornerRadius)", cornerRadius != 100 && style != .standard)
-		addNameTag("all", ignoreSafeAreas)
-		#if canImport(CoreImage)
-		addNameTag("CI", generatorType == .coreImage)
-		#endif
-		
-		let baseName = !outputURL.hasDirectoryPath ? outputURL.lastPathComponent : {
-			let formatter = DateFormatter()
-			formatter.locale = Locale(identifier: "en_US_POSIX")
-			formatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
-			return formatter.string(from: Date())
-		}()
-		let name = "\(baseName)_\(suffix)"
-		let nameStyled = "\(baseName)_\(suffixStyled)"
-		
-		let baseURL = outputURL.hasDirectoryPath ? outputURL : outputURL.deletingLastPathComponent()
-		let url = baseURL.appendingPathComponent(name)
-		let urlStyled = baseURL.appendingPathComponent(nameStyled)
-		
-		return (baseURL, url, urlStyled)
 	}
 	
 	
 	#if canImport(AppKit)
-	private func createPNG<T: QRCodeProtocol>(qrCode: T, outputFile: URL) throws {
-		let outputFilePNG = outputFile.appendingPathExtension("png")
-		let cicontext = CIContext()
-		let ciimage = CIImage(cgImage: qrCode.cgimage)
-		try cicontext.writePNGRepresentation(of: ciimage, to: outputFilePNG, format: .RGBA8, colorSpace: ciimage.colorSpace!)
+	public func createRasterImage<T: QRCodeProtocol>(qrCode: T) -> CIImage {
+		CIImage(cgImage: qrCode.cgimage)
 	}
 	#endif
 	
 	
-	private func createSVG<T: QRCodeProtocol>(qrCode: T, outputFile: URL) throws {
+	public func createSVG<T: QRCodeProtocol>(qrCode: T) -> String {
 		let border = 1
 		let size = qrCode.size
 		let sizeWithBorder = size + border*2
@@ -221,8 +188,6 @@ struct QRGenCode {
 				}
 		}
 		
-		// Write file
-		let outputFileSVG = outputFile.appendingPathExtension("svg")
-		try svg.content(combineClusters: !noShapeOptimization).write(to: outputFileSVG, atomically: true, encoding: .utf8)
+		return svg.content(combineClusters: !noShapeOptimization)
 	}
 }

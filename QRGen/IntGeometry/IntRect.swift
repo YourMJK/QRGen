@@ -8,12 +8,16 @@
 import Foundation
 
 
-struct IntRect: Equatable {
-	var origin: IntPoint
-	var size: IntSize
+public struct IntRect: Equatable {
+	public var origin: IntPoint
+	public var size: IntSize
+	public init(origin: IntPoint, size: IntSize) {
+		self.origin = origin
+		self.size = size
+	}
 }
 
-extension IntRect {
+public extension IntRect {
 	static let zero = Self(origin: .zero, size: .zero)
 	
 	init(x: Int, y: Int, width: Int, height: Int) {
@@ -31,7 +35,7 @@ extension IntRect {
 	}
 }
 
-extension IntRect {
+public extension IntRect {
 	var minX: Int {
 		origin.x
 	}
@@ -62,7 +66,7 @@ extension IntRect {
 	}
 }
 
-extension IntRect {
+public extension IntRect {
 	func offsetBy(dx: Int, dy: Int) -> IntRect {
 		IntRect(origin: origin.offsetBy(dx: dx, dy: dy), size: size)
 	}
@@ -100,17 +104,17 @@ extension IntRect {
 }
 
 extension IntRect: RandomAccessCollection {
-	typealias Element = IntPoint
-	typealias Index = Int
+	public typealias Element = IntPoint
+	public typealias Index = Int
 	
-	var startIndex: Int {
+	public var startIndex: Int {
 		0
 	}
-	var endIndex: Int {
+	public var endIndex: Int {
 		width * height
 	}
 	
-	subscript(index: Int) -> IntPoint {
+	public subscript(index: Int) -> IntPoint {
 		get {
 			precondition(startIndex <= index && index < endIndex, "Index out of range")
 			let (j, i) = index.quotientAndRemainder(dividingBy: width)
@@ -119,9 +123,9 @@ extension IntRect: RandomAccessCollection {
 	}	
 }
 
-extension IntRect {
+public extension IntRect {
 	struct Iterator: IteratorProtocol {
-		typealias Element = IntRect.Element
+		public typealias Element = IntRect.Element
 		
 		private let rangeX: Range<Int>
 		private let rangeY: Range<Int>
@@ -135,7 +139,7 @@ extension IntRect {
 			self.y = rangeY.lowerBound
 		}
 		
-		mutating func next() -> Element? {
+		public mutating func next() -> Element? {
 			if x >= rangeX.upperBound {
 				x = rangeX.lowerBound
 				y += 1

@@ -8,16 +8,20 @@
 import Foundation
 
 
-struct IntPoint: Equatable, Hashable {
-	var x: Int
-	var y: Int
+public struct IntPoint: Equatable, Hashable {
+	public var x: Int
+	public var y: Int
+	public init(x: Int, y: Int) {
+		self.x = x
+		self.y = y
+	}
 }
 
-extension IntPoint {
+public extension IntPoint {
 	static let zero = Self(x: 0, y: 0)
 }
 
-extension IntPoint {
+public extension IntPoint {
 	func offsetBy(dx: Int, dy: Int) -> IntPoint {
 		IntPoint(x: x+dx, y: y+dy)
 	}
