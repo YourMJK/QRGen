@@ -1,5 +1,5 @@
 //
-//  QRGenContent.swift
+//  QRContent.swift
 //  QRGen
 //
 //  Created by Max-Joseph on 15.01.23.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct QRGenContent {
+public struct QRContent {
 	public enum WifiEncryption: String, CaseIterable {
 		case wep
 		case wpa
