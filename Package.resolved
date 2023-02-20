@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "IntGeometry",
+        "repositoryURL": "https://github.com/YourMJK/IntGeometry",
+        "state": {
+          "branch": "main",
+          "revision": "0686c14ae7d1f7d05526d105f3a308f0ecd33fb5",
+          "version": null
+        }
+      },
+      {
         "package": "QRCodeGenerator",
         "repositoryURL": "https://github.com/YourMJK/QRCodeGenerator",
         "state": {

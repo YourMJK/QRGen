@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import IntGeometry
 
 
 extension GridSVG {

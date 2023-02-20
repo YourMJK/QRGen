@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import IntGeometry
 #if canImport(AppKit)
 import CoreImage
 #endif
