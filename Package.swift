@@ -9,8 +9,8 @@ let package = Package(
 		.library(name: "QRGen", targets: ["QRGen"]),
 	],
 	dependencies: [
-		.package(url: "https://github.com/YourMJK/QRCodeGenerator", branch: "master"),
-		.package(url: "https://github.com/YourMJK/IntGeometry", branch: "main"),
+		.package(url: "https://github.com/YourMJK/QRCodeGenerator", from: "1.1.0"),
+		.package(url: "https://github.com/YourMJK/IntGeometry", from: "1.0.0"),
 	],
 	targets: [
 		.target(
